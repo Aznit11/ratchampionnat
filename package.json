@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'Build completed'"  
+    "build": "npm rebuild",
+    "postinstall": "npm rebuild sqlite3"  
   },
   "engines": {
     "node": ">=16.0.0"

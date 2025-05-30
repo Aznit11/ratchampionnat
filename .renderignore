@@ -1,0 +1,10 @@
+# Exclude unnecessary files from Render deployment
+node_modules
+.git
+.env
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.db
+*.db-journal
+.DS_Store
