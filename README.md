@@ -29,7 +29,7 @@ A responsive web application for managing a football league tournament with 35 t
 1. Clone the repository
 2. Run `npm install` to install dependencies
 3. Start the application with `npm start`
-4. Visit `http://localhost:3000` in your browser
+4. Visit `http://ratchampionnat.com` in your browser
 
 ### Production Deployment
 
@@ -88,15 +88,13 @@ A responsive web application for managing a football league tournament with 35 t
 
 2. Open your browser and navigate to:
    ```
-   http://localhost:3000
+   http://ratchampionnat.com
    ```
 
 3. To access the admin area:
    ```
-   http://localhost:3000/admin
+   http://ratchampionnat.com/admin
    ```
-   - Username: ratchampionat
-   - Password: 2025ratchampionat2025
 
 ## Tournament Structure
 
