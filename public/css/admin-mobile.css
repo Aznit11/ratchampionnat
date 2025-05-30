@@ -1,0 +1,241 @@
+/* 
+ * Mobile-specific enhancements for Rat Ait Bououlli Football League Admin Panel
+ * This file provides additional responsive styling for mobile devices
+ */
+
+/* Global Admin Mobile Adjustments */
+@media (max-width: 992px) {
+  /* Improved spacing */
+  .admin-container {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "main";
+  }
+  
+  /* Adjust sidebar to be a top navbar on mobile */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-sidebar.active {
+    left: 0;
+  }
+  
+  /* Add mobile menu toggle */
+  .mobile-menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+  }
+  
+  /* Adjust header for mobile */
+  .admin-header {
+    padding-left: 65px;
+    padding-right: 15px;
+    height: auto;
+    min-height: var(--header-height);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+  
+  /* Adjust content area */
+  .admin-content {
+    padding: 15px;
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Tablets and Small Desktops */
+@media (max-width: 992px) and (min-width: 769px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .admin-card {
+    overflow-x: auto;
+  }
+}
+
+/* Mobile Phones */
+@media (max-width: 768px) {
+  /* Header adjustments */
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  
+  .admin-header h1 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  /* Stats and cards */
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .stat-card {
+    padding: 15px;
+  }
+  
+  /* Tables */
+  .admin-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 12px;
+  }
+  
+  /* Forms */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .form-actions .btn {
+    margin: 5px 0;
+    width: 100%;
+  }
+  
+  input, select, textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 12px;
+    height: 44px;
+  }
+  
+  textarea {
+    height: auto;
+    min-height: 100px;
+  }
+  
+  /* Match card adjustments */
+  .match-card {
+    flex-direction: column;
+  }
+  
+  .match-info {
+    margin-bottom: 15px;
+    width: 100%;
+  }
+  
+  .match-teams {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  /* Button improvements */
+  .btn {
+    min-height: 44px;
+    padding: 12px 15px;
+    font-size: 14px;
+  }
+  
+  /* Modals */
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  /* Team management */
+  .team-card {
+    flex-direction: column;
+  }
+  
+  .team-info {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .team-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  /* Tab adjustments */
+  .tabs {
+    flex-direction: column;
+  }
+  
+  .tab-btn {
+    width: 100%;
+    margin: 0 0 5px 0;
+    border-radius: 4px;
+  }
+}
+
+/* Small Mobile Phones */
+@media (max-width: 480px) {
+  .admin-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .admin-content {
+    padding: 10px;
+  }
+  
+  .admin-card {
+    padding: 12px;
+  }
+  
+  .modal-title {
+    font-size: 1.3rem;
+  }
+}
+
+/* Fix for the admin login page */
+@media (max-width: 768px) {
+  .login-container {
+    width: 90%;
+    max-width: 400px;
+  }
+  
+  .login-form {
+    padding: 20px;
+  }
+}

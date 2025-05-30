@@ -2,10 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const path = require('path');
+const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 const expressLayouts = require('express-ejs-layouts');
 const i18nMiddleware = require('./middleware/i18n');
+
+// Ensure data directory exists for persistent storage on Render
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  console.log('Creating data directory for persistent storage');
+  fs.mkdirSync(dataDir);
+}
 
 // Initialize express app
 const app = express();
@@ -32,8 +40,12 @@ app.use(cookieSession({
 // Apply i18n middleware
 app.use(i18nMiddleware);
 
+// Import backup functionality
+const { createBackup } = require('./backup');
+
 // Database setup
-const db = new sqlite3.Database('./database.db', (err) => {
+const dbPath = path.join(dataDir, 'football-league.sqlite');
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Error opening database', err.message);
   } else {
@@ -2002,6 +2014,28 @@ app.get('/api/admin/upcoming-matches', (req, res) => {
 
 // Start the server
 
+// Schedule automatic database backups (every 24 hours)
+let lastBackupTime = 0;
+const BACKUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+function scheduleBackups() {
+  const now = Date.now();
+  if (now - lastBackupTime >= BACKUP_INTERVAL) {
+    console.log('Creating scheduled database backup...');
+    createBackup();
+    lastBackupTime = now;
+  }
+  
+  // Schedule next check in 1 hour
+  setTimeout(scheduleBackups, 60 * 60 * 1000);
+}
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  
+  // Create initial backup when server starts
+  createBackup();
+  
+  // Start backup scheduling
+  scheduleBackups();
 });

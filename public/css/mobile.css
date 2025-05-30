@@ -1,0 +1,159 @@
+/* 
+ * Mobile-specific enhancements for Rat Ait Bououlli Football League
+ * This file provides additional responsive styling for mobile devices
+ */
+
+/* Global Mobile Adjustments */
+@media (max-width: 768px) {
+  /* Improved spacing for mobile */
+  .container {
+    padding: 0 15px;
+  }
+  
+  /* Better touch targets */
+  button, 
+  .btn, 
+  a.btn, 
+  input[type="submit"],
+  .stage-btn,
+  .tab-btn {
+    min-height: 44px; /* Minimum Apple recommended touch target size */
+    padding: 12px 20px;
+  }
+  
+  /* Fix header on mobile */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Improved mobile menu */
+  nav.active {
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    background-color: var(--primary-dark);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+  }
+  
+  /* Day cards on mobile */
+  .day-card {
+    border-radius: var(--border-radius);
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+  
+  /* Team and match content on mobile */
+  .match-content {
+    width: 100%;
+  }
+  
+  .match-vs {
+    padding: 0 8px;
+  }
+  
+  /* Admin form improvements */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  input, select, textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+/* Small Mobile Phones */
+@media (max-width: 480px) {
+  /* Extreme space saving for very small screens */
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1.4rem;
+  }
+  
+  /* Compact match display */
+  .match-card {
+    padding: 12px;
+  }
+  
+  /* Make team logos smaller on very small screens */
+  .team-logo {
+    width: 40px;
+    height: 40px;
+  }
+  
+  /* Group standings more compact */
+  .standings-table th, 
+  .standings-table td {
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+  
+  /* Fix scrolling tables */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better tap targets in tables */
+  .standings-table td {
+    min-height: 44px;
+  }
+}
+
+/* Fix for mobile landscape mode */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero {
+    padding: 30px 0;
+  }
+  
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  
+  /* More compact navigation in landscape */
+  nav.active {
+    max-height: 80vh;
+  }
+  
+  nav ul li a {
+    padding: 8px 15px;
+  }
+}
+
+/* RTL-specific mobile adjustments */
+@media (max-width: 768px) {
+  html[dir="rtl"] .dropdown-content a {
+    padding-right: 30px;
+    padding-left: 15px;
+  }
+  
+  html[dir="rtl"] .match-teams .vs {
+    transform: rotate(180deg);
+  }
+}
+
+/* Fix for notched phones (iPhone X and newer) */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  header {
+    padding-top: env(safe-area-inset-top);
+  }
+}

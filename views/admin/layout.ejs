@@ -2,13 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
     <title>Admin - Rat Ait Bououlli League</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-mobile.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="admin-page">
+    <!-- Mobile menu toggle button -->
+    <div class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fas fa-bars"></i>
+    </div>
+    
     <div class="admin-container">
         <div class="admin-sidebar">
             <div class="sidebar-header">
@@ -53,5 +62,57 @@
     
     <script src="/js/api-client.js"></script>
     <script src="/js/admin.js"></script>
+    <script>
+        // Mobile sidebar toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.querySelector('.admin-sidebar');
+            const overlay = document.createElement('div');
+            
+            // Create overlay for sidebar when active
+            overlay.className = 'sidebar-overlay';
+            overlay.style.display = 'none';
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            overlay.style.zIndex = '999';
+            document.body.appendChild(overlay);
+            
+            // Toggle sidebar on menu button click
+            mobileMenuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                
+                if (sidebar.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                    overlay.style.display = 'block';
+                } else {
+                    document.body.style.overflow = ''; // Allow scrolling
+                    overlay.style.display = 'none';
+                }
+            });
+            
+            // Close sidebar when clicking overlay
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                document.body.style.overflow = ''; // Allow scrolling
+                overlay.style.display = 'none';
+            });
+            
+            // Close sidebar when clicking a menu item (for mobile)
+            const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 992) { // Only on mobile
+                        sidebar.classList.remove('active');
+                        document.body.style.overflow = '';
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
