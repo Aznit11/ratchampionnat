@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "npm rebuild",
-    "postinstall": "npm rebuild sqlite3"  
+    "postinstall": "npm rebuild sqlite3 bcrypt --update-binary"
   },
   "engines": {
     "node": ">=16.0.0"
