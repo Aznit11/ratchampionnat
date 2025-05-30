@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football League API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Football League API Test Page</h1>
+    <p>Use this simple page to test if the API endpoints are working</p>
+    
+    <div>
+        <button id="testUpcoming">Test Upcoming Matches</button>
+        <button id="testResults">Test Latest Results</button>
+    </div>
+    
+    <h2>Response:</h2>
+    <pre id="output">Click a button to test an endpoint...</pre>
+    
+    <h2>Formatted Output:</h2>
+    <div id="formatted"></div>
+    
+    <script>
+        document.getElementById('testUpcoming').addEventListener('click', async () => {
+            const output = document.getElementById('output');
+            const formatted = document.getElementById('formatted');
+            
+            output.textContent = 'Loading...';
+            formatted.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/upcoming-matches?limit=5');
+                const data = await response.json();
+                
+                // Display raw JSON
+                output.textContent = JSON.stringify(data, null, 2);
+                
+                // Display formatted cards
+                formatted.innerHTML = '';
+                if (data.length === 0) {
+                    formatted.innerHTML = '<div class="error">No matches found</div>';
+                } else {
+                    formatted.innerHTML = `<div class="success">Found ${data.length} upcoming matches</div>`;
+                    
+                    data.forEach(match => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        
+                        // Format date
+                        let dateDisplay = match.match_date || 'Unknown date';
+                        try {
+                            const date = new Date(match.match_date);
+                            if (!isNaN(date.getTime())) {
+                                dateDisplay = date.toLocaleDateString('en-US', { 
+                                    weekday: 'short', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                });
+                            }
+                        } catch (e) {}
+                        
+                        // Format time
+                        let timeDisplay = match.match_time || '';
+                        if (timeDisplay) {
+                            const [hours, minutes] = timeDisplay.split(':');
+                            if (hours && minutes) {
+                                const hour = parseInt(hours);
+                                const ampm = hour >= 12 ? 'PM' : 'AM';
+                                const hour12 = hour % 12 || 12;
+                                timeDisplay = `${hour12}:${minutes} ${ampm}`;
+                            }
+                        }
+                        
+                        card.innerHTML = `
+                            <div><strong>ID:</strong> ${match.id}</div>
+                            <div><strong>Date:</strong> ${dateDisplay}</div>
+                            <div><strong>Time:</strong> ${timeDisplay}</div>
+                            <div><strong>Stage:</strong> ${match.stage || 'Unknown'}</div>
+                            <div><strong>Teams:</strong> ${match.home_team_name || 'TBD'} vs ${match.away_team_name || 'TBD'}</div>
+                            <div><strong>Played:</strong> ${match.played ? 'Yes' : 'No'}</div>
+                        `;
+                        
+                        formatted.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                formatted.innerHTML = `<div class="error">Failed to fetch data: ${error.message}</div>`;
+            }
+        });
+        
+        document.getElementById('testResults').addEventListener('click', async () => {
+            const output = document.getElementById('output');
+            const formatted = document.getElementById('formatted');
+            
+            output.textContent = 'Loading...';
+            formatted.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch('/api/latest-results?limit=5');
+                const data = await response.json();
+                
+                // Display raw JSON
+                output.textContent = JSON.stringify(data, null, 2);
+                
+                // Display formatted cards
+                formatted.innerHTML = '';
+                if (data.length === 0) {
+                    formatted.innerHTML = '<div class="error">No results found</div>';
+                } else {
+                    formatted.innerHTML = `<div class="success">Found ${data.length} latest results</div>`;
+                    
+                    data.forEach(match => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+                        
+                        // Format date
+                        let dateDisplay = match.match_date || 'Unknown date';
+                        try {
+                            const date = new Date(match.match_date);
+                            if (!isNaN(date.getTime())) {
+                                dateDisplay = date.toLocaleDateString('en-US', { 
+                                    weekday: 'short', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                });
+                            }
+                        } catch (e) {}
+                        
+                        // Format time
+                        let timeDisplay = match.match_time || '';
+                        if (timeDisplay) {
+                            const [hours, minutes] = timeDisplay.split(':');
+                            if (hours && minutes) {
+                                const hour = parseInt(hours);
+                                const ampm = hour >= 12 ? 'PM' : 'AM';
+                                const hour12 = hour % 12 || 12;
+                                timeDisplay = `${hour12}:${minutes} ${ampm}`;
+                            }
+                        }
+                        
+                        card.innerHTML = `
+                            <div><strong>ID:</strong> ${match.id}</div>
+                            <div><strong>Date:</strong> ${dateDisplay}</div>
+                            <div><strong>Time:</strong> ${timeDisplay}</div>
+                            <div><strong>Stage:</strong> ${match.stage || 'Unknown'}</div>
+                            <div><strong>Teams:</strong> ${match.home_team_name || 'TBD'} vs ${match.away_team_name || 'TBD'}</div>
+                            <div><strong>Score:</strong> ${match.home_score || 0} - ${match.away_score || 0}</div>
+                        `;
+                        
+                        formatted.appendChild(card);
+                    });
+                }
+            } catch (error) {
+                output.textContent = `Error: ${error.message}`;
+                formatted.innerHTML = `<div class="error">Failed to fetch data: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

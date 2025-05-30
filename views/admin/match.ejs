@@ -1,0 +1,257 @@
+
+            <div class="admin-header">
+                <h1>Match Details</h1>
+                <div class="admin-user">
+                    <span><i class="fas fa-user"></i> Admin</span>
+                </div>
+            </div>
+            
+            <div class="back-button">
+                <a href="/admin/matches?stage=<%= encodeURIComponent(match.stage) %>" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Matches
+                </a>
+            </div>
+            
+            <div class="admin-section">
+                <h2>Match Information</h2>
+                
+                <form action="/admin/match/<%= match.id %>/update" method="POST" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="match-date">Date:</label>
+                            <input type="date" id="match-date" name="match_date" class="form-control" value="<%= match.match_date %>" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="match-time">Time:</label>
+                            <input type="time" id="match-time" name="match_time" class="form-control" value="<%= match.match_time %>" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="home-team">Home Team:</label>
+                            <select id="home-team" name="home_team_id" class="form-control">
+                                <option value="">TBD (To Be Determined)</option>
+                                <% teams.forEach(team => { %>
+                                    <option value="<%= team.id %>" <%= match.home_team_id == team.id ? 'selected' : '' %>><%= team.name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="away-team">Away Team:</label>
+                            <select id="away-team" name="away_team_id" class="form-control">
+                                <option value="">TBD (To Be Determined)</option>
+                                <% teams.forEach(team => { %>
+                                    <option value="<%= team.id %>" <%= match.away_team_id == team.id ? 'selected' : '' %>><%= team.name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="home-score">Home Score:</label>
+                            <input type="number" id="home-score" name="home_score" class="form-control" value="<%= match.home_score === null ? '' : match.home_score %>" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="away-score">Away Score:</label>
+                            <input type="number" id="away-score" name="away_score" class="form-control" value="<%= match.away_score === null ? '' : match.away_score %>" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Match</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="admin-section">
+                <h2>Goals</h2>
+                
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>Player</th>
+                                <th>Minute</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% goals.forEach(goal => { %>
+                                <tr>
+                                    <td><%= goal.team_name %></td>
+                                    <td><%= goal.player_name %></td>
+                                    <td><%= goal.minute %>'</td>
+                                    <td>
+                                        <form action="/admin/match/<%= match.id %>/goal/delete" method="POST" style="display: inline;">
+                                            <input type="hidden" name="goalId" value="<%= goal.id %>">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this goal?')">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            <% if (goals.length === 0) { %>
+                                <tr>
+                                    <td colspan="4" class="no-data">No goals recorded</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="admin-form-section">
+                    <h3>Add Goal</h3>
+                    <form action="/admin/match/<%= match.id %>/add-goal" method="POST" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="goal-team">Team:</label>
+                                <select id="goal-team" name="team_id" class="form-control" required>
+                                    <option value="">-- Select Team --</option>
+                                    <% if (match.home_team_id) { %>
+                                        <option value="<%= match.home_team_id %>"><%= match.home_team_name %></option>
+                                    <% } %>
+                                    <% if (match.away_team_id) { %>
+                                        <option value="<%= match.away_team_id %>"><%= match.away_team_name %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="goal-player">Player Name:</label>
+                                <input type="text" id="goal-player" name="player_name" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="goal-minute">Minute:</label>
+                                <input type="number" id="goal-minute" name="minute" class="form-control" min="1" max="120" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Goal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h2>Cards</h2>
+                
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <th>Player</th>
+                                <th>Card Type</th>
+                                <th>Minute</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cards.forEach(card => { %>
+                                <tr>
+                                    <td><%= card.team_name %></td>
+                                    <td><%= card.player_name %></td>
+                                    <td>
+                                        <span class="card-badge <%= card.card_type.toLowerCase() %>">
+                                            <%= card.card_type %> Card
+                                        </span>
+                                    </td>
+                                    <td><%= card.minute %>'</td>
+                                    <td>
+                                        <form action="/admin/match/<%= match.id %>/card/delete" method="POST" style="display: inline;">
+                                            <input type="hidden" name="cardId" value="<%= card.id %>">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this card?')">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                            <% if (cards.length === 0) { %>
+                                <tr>
+                                    <td colspan="5" class="no-data">No cards recorded</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="admin-form-section">
+                    <h3>Add Card</h3>
+                    <form action="/admin/match/<%= match.id %>/add-card" method="POST" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="card-team">Team:</label>
+                                <select id="card-team" name="team_id" class="form-control" required>
+                                    <option value="">-- Select Team --</option>
+                                    <% if (match.home_team_id) { %>
+                                        <option value="<%= match.home_team_id %>"><%= match.home_team_name %></option>
+                                    <% } %>
+                                    <% if (match.away_team_id) { %>
+                                        <option value="<%= match.away_team_id %>"><%= match.away_team_name %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="card-player">Player Name:</label>
+                                <input type="text" id="card-player" name="player_name" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="card-type">Card Type:</label>
+                                <select id="card-type" name="card_type" class="form-control" required>
+                                    <option value="Yellow">Yellow Card</option>
+                                    <option value="Red">Red Card</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="card-minute">Minute:</label>
+                                <input type="number" id="card-minute" name="minute" class="form-control" min="1" max="120" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Card</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+<script>
+    // Delete goal functionality would be implemented here with AJAX
+    // Since we don't have the endpoint set up, we'll leave this as a placeholder
+    const deleteGoalButtons = document.querySelectorAll('.btn-delete-goal');
+    deleteGoalButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                const goalId = this.getAttribute('data-id');
+                // Make AJAX request to delete goal
+                alert('This functionality would delete the goal with ID: ' + goalId);
+                // After successful deletion, refresh the page
+                // window.location.reload();
+            }
+        });
+    });
+    
+    // Delete card functionality would be implemented here with AJAX
+    const deleteCardButtons = document.querySelectorAll('.btn-delete-card');
+    deleteCardButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this card?')) {
+                const cardId = this.getAttribute('data-id');
+                // Make AJAX request to delete card
+                alert('This functionality would delete the card with ID: ' + cardId);
+                // After successful deletion, refresh the page
+                // window.location.reload();
+            }
+        });
+    });
+</script>

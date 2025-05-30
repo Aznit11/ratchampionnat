@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Rat Ait Bououlli League</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-page">
+    <div class="admin-container">
+        <div class="admin-sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-futbol"></i>
+                <h2>Admin Panel</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="<%= path === '/admin/dashboard' ? 'active' : '' %>">
+                        <a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="<%= path === '/admin/teams' ? 'active' : '' %>">
+                        <a href="/admin/teams"><i class="fas fa-users"></i> Teams</a>
+                    </li>
+                    <li class="<%= path === '/admin/matches' && stage === 'Group Stage' ? 'active' : '' %>">
+                        <a href="/admin/matches?stage=Group%20Stage"><i class="fas fa-calendar-alt"></i> Group Matches</a>
+                    </li>
+                    <li class="<%= path === '/admin/matches' && stage === 'Round of 16' ? 'active' : '' %>">
+                        <a href="/admin/matches?stage=Round%20of%2016"><i class="fas fa-trophy"></i> Round of 16</a>
+                    </li>
+                    <li class="<%= path === '/admin/matches' && stage === 'Quarter Final' ? 'active' : '' %>">
+                        <a href="/admin/matches?stage=Quarter%20Final"><i class="fas fa-trophy"></i> Quarter Final</a>
+                    </li>
+                    <li class="<%= path === '/admin/matches' && stage === 'Semi Final' ? 'active' : '' %>">
+                        <a href="/admin/matches?stage=Semi%20Final"><i class="fas fa-trophy"></i> Semi Final</a>
+                    </li>
+                    <li class="<%= path === '/admin/matches' && stage === 'Final' ? 'active' : '' %>">
+                        <a href="/admin/matches?stage=Final"><i class="fas fa-trophy"></i> Final</a>
+                    </li>
+                    <li>
+                        <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div class="admin-content">
+            <%- body %>
+        </div>
+    </div>
+    
+    <script src="/js/api-client.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

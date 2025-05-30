@@ -1,0 +1,112 @@
+/**
+ * RTL (Right-to-Left) styles for Arabic language support
+ */
+
+/* General RTL overrides */
+html[dir="rtl"] body {
+    font-family: 'Tajawal', 'Montserrat', sans-serif;
+    text-align: right;
+}
+
+/* Navigation */
+html[dir="rtl"] nav ul li {
+    float: right;
+}
+
+html[dir="rtl"] .dropdown-content {
+    left: auto;
+    right: 0;
+}
+
+html[dir="rtl"] .fa-caret-down {
+    margin-right: 5px;
+    margin-left: 0;
+}
+
+/* Match cards */
+html[dir="rtl"] .match-date,
+html[dir="rtl"] .match-stage {
+    text-align: right;
+}
+
+html[dir="rtl"] .match-teams {
+    flex-direction: row-reverse;
+}
+
+/* Buttons */
+html[dir="rtl"] .btn i {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+/* Language selector */
+.language-selector {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 14px;
+}
+
+html[dir="rtl"] .language-selector {
+    right: auto;
+    left: 20px;
+}
+
+.language-selector a {
+    color: #fff;
+    text-decoration: none;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.language-selector a.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+}
+
+/* Forms */
+html[dir="rtl"] label {
+    float: right;
+}
+
+html[dir="rtl"] input[type="text"],
+html[dir="rtl"] input[type="password"],
+html[dir="rtl"] select {
+    text-align: right;
+}
+
+/* Tables */
+html[dir="rtl"] th,
+html[dir="rtl"] td {
+    text-align: right;
+}
+
+/* Admin dashboard */
+html[dir="rtl"] .admin-user {
+    float: left;
+}
+
+html[dir="rtl"] .stat-icon {
+    float: right;
+    margin-right: 0;
+    margin-left: 15px;
+}
+
+html[dir="rtl"] .admin-header h1 {
+    float: right;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .language-selector {
+        position: relative;
+        top: auto;
+        right: auto;
+        text-align: center;
+        margin: 10px 0;
+    }
+    
+    html[dir="rtl"] .language-selector {
+        left: auto;
+    }
+}

@@ -1,0 +1,127 @@
+
+            <div class="admin-header">
+                <h1>Manage <%= stage %> Matches</h1>
+                <div class="admin-user">
+                    <span><i class="fas fa-user"></i> Admin</span>
+                </div>
+            </div>
+            
+            <div class="stage-navigation">
+                <a href="/admin/matches?stage=Group%20Stage" class="stage-btn <%= stage === 'Group Stage' ? 'active' : '' %>">Group Stage</a>
+                <a href="/admin/matches?stage=Round%20of%2016" class="stage-btn <%= stage === 'Round of 16' ? 'active' : '' %>">Round of 16</a>
+                <a href="/admin/matches?stage=Quarter%20Final" class="stage-btn <%= stage === 'Quarter Final' ? 'active' : '' %>">Quarter Final</a>
+                <a href="/admin/matches?stage=Semi%20Final" class="stage-btn <%= stage === 'Semi Final' ? 'active' : '' %>">Semi Final</a>
+                <a href="/admin/matches?stage=Final" class="stage-btn <%= stage === 'Final' ? 'active' : '' %>">Final</a>
+            </div>
+            
+            <div class="admin-actions">
+                <a href="/admin/update-knockout-stages" class="btn btn-primary" onclick="return confirm('This will automatically update all knockout stage matches based on group results and previous match results. Continue?')">
+                    <i class="fas fa-sync-alt"></i> Auto-Update Knockout Stages
+                </a>
+                <p class="help-text"><small>This will automatically populate teams in knockout stages based on group results and previous match winners.</small></p>
+            </div>
+            
+            <div class="admin-filters">
+                <div class="filter-group">
+                    <label for="date-filter">Filter by Date:</label>
+                    <input type="date" id="date-filter" class="form-control">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="status-filter">Filter by Status:</label>
+                    <select id="status-filter" class="form-control">
+                        <option value="all">All Matches</option>
+                        <option value="played">Played</option>
+                        <option value="upcoming">Upcoming</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <button id="reset-filters" class="btn btn-secondary">Reset Filters</button>
+                </div>
+            </div>
+            
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Home Team</th>
+                            <th>Score</th>
+                            <th>Away Team</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% matches.forEach(match => { %>
+                            <tr data-date="<%= match.match_date %>" data-status="<%= match.played ? 'played' : 'upcoming' %>">
+                                <td><%= match.match_date %></td>
+                                <td><%= match.match_time %></td>
+                                <td><%= match.home_team_name || 'TBD' %></td>
+                                <td>
+                                    <% if (match.played) { %>
+                                        <%= match.home_score %> - <%= match.away_score %>
+                                    <% } else { %>
+                                        vs
+                                    <% } %>
+                                </td>
+                                <td><%= match.away_team_name || 'TBD' %></td>
+                                <td>
+                                    <% if (match.played) { %>
+                                        <span class="status-badge played">Played</span>
+                                    <% } else { %>
+                                        <span class="status-badge upcoming">Upcoming</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <a href="/admin/match/<%= match.id %>" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+                
+                <% if (matches.length === 0) { %>
+                    <div class="no-data-message">
+                        <p>No matches found for this stage.</p>
+                    </div>
+                <% } %>
+            </div>
+<script>
+    // Date filter
+    document.getElementById('date-filter').addEventListener('change', filterMatches);
+    
+    // Status filter
+    document.getElementById('status-filter').addEventListener('change', filterMatches);
+    
+    // Reset filters
+    document.getElementById('reset-filters').addEventListener('click', function() {
+        document.getElementById('date-filter').value = '';
+        document.getElementById('status-filter').value = 'all';
+        filterMatches();
+    });
+    
+    function filterMatches() {
+        const dateFilter = document.getElementById('date-filter').value;
+        const statusFilter = document.getElementById('status-filter').value;
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const rowDate = row.getAttribute('data-date');
+            const rowStatus = row.getAttribute('data-status');
+            
+            const dateMatch = !dateFilter || rowDate === dateFilter;
+            const statusMatch = statusFilter === 'all' || rowStatus === statusFilter;
+            
+            if (dateMatch && statusMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="<%= currentLanguage %>" <%= isRTL ? 'dir="rtl"' : '' %>>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= t.global.title %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/enhanced-master.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><i class="fas fa-futbol"></i> <%= t.global.title %></h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="/"><i class="fas fa-home"></i> <%= t.navigation.home %></a></li>
+                    <li><a href="/groups"><i class="fas fa-users"></i> <%= t.navigation.groups %></a></li>
+                    <li><a href="/fixtures?stage=Group%20Stage"><i class="fas fa-calendar-alt"></i> <%= t.navigation.fixtures %></a></li>
+                    <li class="dropdown">
+                        <a href="#"><i class="fas fa-trophy"></i> <%= t.navigation.knockoutStages %> <i class="fa fa-caret-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href="/fixtures?stage=Round%20of%2016"><%= t.navigation.roundOf16 %></a>
+                            <a href="/fixtures?stage=Quarter%20Final"><%= t.navigation.quarterFinal %></a>
+                            <a href="/fixtures?stage=Semi%20Final"><%= t.navigation.semiFinal %></a>
+                            <a href="/fixtures?stage=Final"><%= t.navigation.final %></a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="language-selector">
+                <a href="?lang=en" class="<%= currentLanguage === 'en' ? 'active' : '' %>">English</a> | 
+                <a href="?lang=ar" class="<%= currentLanguage === 'ar' ? 'active' : '' %>">العربية</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <%- body %>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p><%= t.global.copyright %></p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

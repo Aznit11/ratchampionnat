@@ -1,0 +1,137 @@
+<div class="container">
+    <section class="page-header">
+        <h1><%= stage %> <%= t.fixtures.title %></h1>
+        <div class="stage-navigation">
+            <a href="/fixtures?stage=Group%20Stage" class="stage-btn <%= stage === 'Group Stage' ? 'active' : '' %>"><%= t.navigation.groupStage %></a>
+            <a href="/fixtures?stage=Round%20of%2016" class="stage-btn <%= stage === 'Round of 16' ? 'active' : '' %>"><%= t.navigation.roundOf16 %></a>
+            <a href="/fixtures?stage=Quarter%20Final" class="stage-btn <%= stage === 'Quarter Final' ? 'active' : '' %>"><%= t.navigation.quarterFinal %></a>
+            <a href="/fixtures?stage=Semi%20Final" class="stage-btn <%= stage === 'Semi Final' ? 'active' : '' %>"><%= t.navigation.semiFinal %></a>
+            <a href="/fixtures?stage=Final" class="stage-btn <%= stage === 'Final' ? 'active' : '' %>"><%= t.navigation.final %></a>
+        </div>
+    </section>
+
+    <section class="fixtures-container">
+        <% 
+        let dateMatches = {};
+        let dayCount = 0;
+        
+        // Group matches by date
+        matches.forEach(match => {
+            if (!dateMatches[match.match_date]) {
+                dateMatches[match.match_date] = [];
+            }
+            dateMatches[match.match_date].push(match);
+        });
+        
+        // Display matches by date
+        let dates = Object.keys(dateMatches).sort();
+        %>
+        
+        <div class="day-cards-container">
+            <% dates.forEach((date, index) => {
+                dayCount++;
+                const dayMatches = dateMatches[date];
+                const dayDate = new Date(date);
+                const locale = currentLanguage === 'ar' ? 'ar-SA' : 'en-US';
+                const dayName = dayDate.toLocaleDateString(locale, { weekday: 'long' });
+                const monthName = dayDate.toLocaleDateString(locale, { month: 'long' });
+                const dayNum = dayDate.getDate();
+            %>
+                <div class="day-card">
+                    <div class="day-header">
+                        <h2><%= currentLanguage === 'ar' ? 'اليوم' : 'DAY' %> <%= dayCount %></h2>
+                        <p><%= dayName %>, <%= monthName %> <%= dayNum %></p>
+                    </div>
+                    
+                    <div class="day-matches">
+                        <% dayMatches.forEach(match => { 
+                            // Determine time class for coloring
+                            let timeClass = '';
+                            if (match.match_time === '06:00 PM' || match.match_time === '18:00') {
+                                timeClass = 'time-purple';
+                            } else if (match.match_time === '04:00 PM' || match.match_time === '16:00') {
+                                timeClass = 'time-orange';
+                            } else if (match.match_time === '10:00 AM' || match.match_time === '10:00') {
+                                timeClass = 'time-teal';
+                            } else if (match.match_time === '08:00 AM' || match.match_time === '08:00') {
+                                timeClass = 'time-teal';
+                            }
+                            
+                            // Convert 24h format to 12h format if needed
+                            let displayTime = match.match_time;
+                            if (displayTime === '18:00') displayTime = '06:00 PM';
+                            if (displayTime === '16:00') displayTime = '04:00 PM';
+                            if (displayTime === '10:00') displayTime = '10:00 AM';
+                            if (displayTime === '08:00') displayTime = '08:00 AM';
+                            
+                            // Get team display names with consideration for stage
+                            let homeTeamDisplay = match.home_team_name || match.home_placeholder || 'TBD';
+                            let awayTeamDisplay = match.away_team_name || match.away_placeholder || 'TBD';
+                            
+                            // For knockout stages, display placeholders if teams not determined yet
+                            if (match.stage !== 'Group Stage' && !match.home_team_name) {
+                                if (match.stage === 'Round of 16') {
+                                    homeTeamDisplay = match.home_placeholder || 'Winner Group ?';
+                                    awayTeamDisplay = match.away_placeholder || 'Runner-up Group ?';
+                                } else {
+                                    homeTeamDisplay = match.home_placeholder || 'Winner Match ?';
+                                    awayTeamDisplay = match.away_placeholder || 'Winner Match ?';
+                                }
+                            }
+                        %>
+                            <div class="match-row">
+                                <div class="match-time <%= timeClass %>"><%= displayTime %></div>
+                                <div class="match-teams">
+                                    <div class="team-names">
+                                        <span class="home-team"><%= homeTeamDisplay %></span>
+                                        <span class="vs"><%= t.home.vs %></span>
+                                        <span class="away-team"><%= awayTeamDisplay %></span>
+                                    </div>
+                                    <a href="/match/<%= match.id %>" class="match-link">
+                                        <% if (match.played) { %>Details<% } else { %>Preview<% } %>
+                                    </a>
+                                </div>
+                                <div class="match-group">
+                                    <% 
+                                    let groupName = "";
+                                    if (match.stage === 'Group Stage') {
+                                        // Use group information from the database
+                                        if (match.home_team_group_name) {
+                                            groupName = match.home_team_group_name;
+                                        } else if (match.away_team_group_name) {
+                                            groupName = match.away_team_group_name;
+                                        } else {
+                                            // Fallback to legacy method (for backward compatibility)
+                                            if (match.home_team_name) {
+                                                const groupLetter = match.home_team_name.match(/Team ([A-H])/)?.[1];
+                                                if (groupLetter) groupName = `Group ${groupLetter}`;
+                                            }
+                                        }
+                                    } else {
+                                        groupName = match.stage;
+                                    }
+                                    %>
+                                    <%= groupName %>
+                                </div>
+
+                                <div class="match-status-bar">
+                                    <% if (match.played) { %>
+                                        <%= match.home_score %> : <%= match.away_score %>
+                                    <% } else { %>
+                                        - : -
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </section>
+</div>
+
+<% if (matches.length === 0) { %>
+    <div class="no-matches">
+        <p><%= t.fixtures.noFixtures %></p>
+    </div>
+<% } %>

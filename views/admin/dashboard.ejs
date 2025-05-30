@@ -1,0 +1,99 @@
+
+            <div class="admin-header">
+                <h1>Dashboard</h1>
+                <div class="admin-user">
+                    <span><i class="fas fa-user"></i> Admin</span>
+                </div>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Teams</h3>
+                        <p class="stat-count" id="team-count">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Matches</h3>
+                        <p class="stat-count" id="match-count">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Completed</h3>
+                        <p class="stat-count" id="completed-count">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Upcoming</h3>
+                        <p class="stat-count" id="upcoming-count">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-sections">
+                <div class="dashboard-section">
+                    <h2>Recent Matches</h2>
+                    <div class="recent-matches" id="recent-matches">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading recent matches...</p>
+                        </div>
+                    </div>
+                    <div class="section-footer">
+                        <a href="/admin/matches?stage=Group%20Stage" class="btn btn-primary">View All Matches</a>
+                    </div>
+                </div>
+                
+                <div class="dashboard-section">
+                    <h2>Upcoming Matches</h2>
+                    <div class="upcoming-matches" id="upcoming-matches">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading upcoming matches...</p>
+                        </div>
+                    </div>
+                    <div class="section-footer">
+                        <a href="/admin/matches?stage=Group%20Stage" class="btn btn-primary">View All Matches</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-actions">
+                <a href="/admin/teams" class="action-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Manage Teams</h3>
+                    <p>Update team names and details</p>
+                </a>
+                
+                <a href="/admin/matches?stage=Group%20Stage" class="action-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Manage Matches</h3>
+                    <p>Update match results and details</p>
+                </a>
+                
+                <a href="/" target="_blank" class="action-card">
+                    <i class="fas fa-eye"></i>
+                    <h3>View Website</h3>
+                    <p>See how it looks to users</p>
+                </a>
+            </div>
+
+<script src="/js/test-admin-api.js"></script>

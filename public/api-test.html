@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .match-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .match-teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .match-score {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .match-date {
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Football League API Test Tool</h1>
+    <p>Use this tool to directly test the API endpoints and verify data retrieval</p>
+
+    <div class="test-section">
+        <h2>Public API Endpoints</h2>
+        <button id="test-upcoming">Test Upcoming Matches</button>
+        <button id="test-results">Test Latest Results</button>
+        <h3>Raw Response:</h3>
+        <pre id="public-output">Click a button to test an endpoint...</pre>
+        <h3>Rendered Output:</h3>
+        <div id="public-rendered"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Admin API Endpoints</h2>
+        <button id="test-admin-upcoming">Test Admin Upcoming Matches</button>
+        <button id="test-admin-results">Test Admin Recent Matches</button>
+        <h3>Raw Response:</h3>
+        <pre id="admin-output">Click a button to test an endpoint...</pre>
+        <h3>Rendered Output:</h3>
+        <div id="admin-rendered"></div>
+    </div>
+
+    <script>
+        // Format date for display
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) {
+                    console.error('Invalid date:', dateStr);
+                    return dateStr; // Return original string if invalid
+                }
+                return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return dateStr; // Return original string on error
+            }
+        }
+
+        // Format time for display
+        function formatTime(timeStr) {
+            if (!timeStr) return '';
+            
+            try {
+                // Parse time in 24-hour format
+                const [hours, minutes] = timeStr.split(':');
+                
+                if (!hours || !minutes) {
+                    console.error('Invalid time format:', timeStr);
+                    return timeStr; // Return original string if invalid
+                }
+                
+                // Convert to 12-hour format
+                let hour = parseInt(hours, 10);
+                if (isNaN(hour)) {
+                    return timeStr;
+                }
+                
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                hour = hour % 12;
+                hour = hour ? hour : 12; // the hour '0' should be '12'
+                
+                return `${hour}:${minutes} ${ampm}`;
+            } catch (error) {
+                console.error('Error formatting time:', error);
+                return timeStr; // Return original string on error
+            }
+        }
+
+        // Function to render match data
+        function renderMatches(matches, container, isResults = false) {
+            container.innerHTML = '';
+            
+            if (!matches || matches.length === 0) {
+                container.innerHTML = '<p>No matches found</p>';
+                return;
+            }
+            
+            matches.forEach(match => {
+                const matchCard = document.createElement('div');
+                matchCard.className = 'match-card';
+                
+                // Safe access to properties with fallbacks
+                const homeTeamName = match.home_team_name || 'TBD';
+                const awayTeamName = match.away_team_name || 'TBD';
+                const matchDate = match.match_date || '';
+                const matchTime = match.match_time || '';
+                const matchStage = match.stage || 'Match';
+                
+                let scoreHtml = 'vs';
+                if (isResults) {
+                    const homeScore = match.home_score !== null ? match.home_score : 0;
+                    const awayScore = match.away_score !== null ? match.away_score : 0;
+                    scoreHtml = `${homeScore} - ${awayScore}`;
+                }
+                
+                matchCard.innerHTML = `
+                    <div class="match-date">${formatDate(matchDate)} - ${formatTime(matchTime)}</div>
+                    <div class="match-stage">${matchStage}</div>
+                    <div class="match-teams">
+                        <div class="team home-team">
+                            <span class="team-name">${homeTeamName}</span>
+                        </div>
+                        <div class="match-score">${scoreHtml}</div>
+                        <div class="team away-team">
+                            <span class="team-name">${awayTeamName}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(matchCard);
+            });
+        }
+
+        // Test upcoming matches
+        document.getElementById('test-upcoming').addEventListener('click', async () => {
+            const outputEl = document.getElementById('public-output');
+            const renderedEl = document.getElementById('public-rendered');
+            
+            outputEl.innerHTML = 'Loading...';
+            renderedEl.innerHTML = 'Loading...';
+            
+            try {
+                console.log('Testing public upcoming matches endpoint...');
+                const response = await fetch('/api/upcoming-matches?limit=5');
+                
+                // Display raw response data
+                const responseData = await response.json();
+                outputEl.innerHTML = JSON.stringify(responseData, null, 2);
+                
+                if (response.ok) {
+                    outputEl.innerHTML = `<span class="success">Success! Found ${responseData.length} matches</span>\n` + outputEl.innerHTML;
+                    
+                    // Render matches
+                    renderMatches(responseData, renderedEl, false);
+                } else {
+                    outputEl.innerHTML = `<span class="error">Error: ${response.status} ${response.statusText}</span>\n` + outputEl.innerHTML;
+                    renderedEl.innerHTML = '<p class="error">Failed to load matches</p>';
+                }
+            } catch (error) {
+                console.error('Error testing upcoming matches:', error);
+                outputEl.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                renderedEl.innerHTML = '<p class="error">Failed to load matches</p>';
+            }
+        });
+
+        // Test latest results
+        document.getElementById('test-results').addEventListener('click', async () => {
+            const outputEl = document.getElementById('public-output');
+            const renderedEl = document.getElementById('public-rendered');
+            
+            outputEl.innerHTML = 'Loading...';
+            renderedEl.innerHTML = 'Loading...';
+            
+            try {
+                console.log('Testing public latest results endpoint...');
+                const response = await fetch('/api/latest-results?limit=5');
+                
+                // Display raw response data
+                const responseData = await response.json();
+                outputEl.innerHTML = JSON.stringify(responseData, null, 2);
+                
+                if (response.ok) {
+                    outputEl.innerHTML = `<span class="success">Success! Found ${responseData.length} results</span>\n` + outputEl.innerHTML;
+                    
+                    // Render matches
+                    renderMatches(responseData, renderedEl, true);
+                } else {
+                    outputEl.innerHTML = `<span class="error">Error: ${response.status} ${response.statusText}</span>\n` + outputEl.innerHTML;
+                    renderedEl.innerHTML = '<p class="error">Failed to load results</p>';
+                }
+            } catch (error) {
+                console.error('Error testing latest results:', error);
+                outputEl.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                renderedEl.innerHTML = '<p class="error">Failed to load results</p>';
+            }
+        });
+
+        // Test admin upcoming matches
+        document.getElementById('test-admin-upcoming').addEventListener('click', async () => {
+            const outputEl = document.getElementById('admin-output');
+            const renderedEl = document.getElementById('admin-rendered');
+            
+            outputEl.innerHTML = 'Loading...';
+            renderedEl.innerHTML = 'Loading...';
+            
+            try {
+                console.log('Testing admin upcoming matches endpoint...');
+                const response = await fetch('/api/admin/upcoming-matches');
+                
+                // Display raw response data
+                const responseData = await response.json();
+                outputEl.innerHTML = JSON.stringify(responseData, null, 2);
+                
+                if (response.ok) {
+                    outputEl.innerHTML = `<span class="success">Success! Found ${responseData.length} matches</span>\n` + outputEl.innerHTML;
+                    
+                    // Render matches
+                    renderMatches(responseData, renderedEl, false);
+                } else {
+                    outputEl.innerHTML = `<span class="error">Error: ${response.status} ${response.statusText}</span>\n` + outputEl.innerHTML;
+                    renderedEl.innerHTML = '<p class="error">Failed to load matches</p>';
+                }
+            } catch (error) {
+                console.error('Error testing admin upcoming matches:', error);
+                outputEl.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                renderedEl.innerHTML = '<p class="error">Failed to load matches</p>';
+            }
+        });
+
+        // Test admin recent matches
+        document.getElementById('test-admin-results').addEventListener('click', async () => {
+            const outputEl = document.getElementById('admin-output');
+            const renderedEl = document.getElementById('admin-rendered');
+            
+            outputEl.innerHTML = 'Loading...';
+            renderedEl.innerHTML = 'Loading...';
+            
+            try {
+                console.log('Testing admin recent matches endpoint...');
+                const response = await fetch('/api/admin/recent-matches');
+                
+                // Display raw response data
+                const responseData = await response.json();
+                outputEl.innerHTML = JSON.stringify(responseData, null, 2);
+                
+                if (response.ok) {
+                    outputEl.innerHTML = `<span class="success">Success! Found ${responseData.length} results</span>\n` + outputEl.innerHTML;
+                    
+                    // Render matches
+                    renderMatches(responseData, renderedEl, true);
+                } else {
+                    outputEl.innerHTML = `<span class="error">Error: ${response.status} ${response.statusText}</span>\n` + outputEl.innerHTML;
+                    renderedEl.innerHTML = '<p class="error">Failed to load results</p>';
+                }
+            } catch (error) {
+                console.error('Error testing admin recent matches:', error);
+                outputEl.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                renderedEl.innerHTML = '<p class="error">Failed to load results</p>';
+            }
+        });
+    </script>
+</body>
+</html>

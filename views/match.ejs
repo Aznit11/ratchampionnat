@@ -1,0 +1,127 @@
+<div class="container">
+    <section class="match-header">
+        <div class="match-stage"><%= match.stage %></div>
+        <div class="match-date">
+            <%= new Date(match.match_date).toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %> | <%= formatTime(match.match_time) %>
+        </div>
+        
+        <div class="match-teams">
+            <div class="team home-team <%= match.played && match.home_score > match.away_score ? 'winner' : '' %>">
+                <div class="team-name"><%= match.home_team_name || 'TBD' %></div>
+                <% if (match.played) { %>
+                    <div class="team-score"><%= match.home_score %></div>
+                <% } %>
+            </div>
+            
+            <div class="match-status">
+                <% if (match.played) { %>
+                    <div class="status-text"><%= t.match.completed %></div>
+                <% } else { %>
+                    <div class="status-text"><%= t.match.notPlayed %></div>
+                <% } %>
+            </div>
+            
+            <div class="team away-team <%= match.played && match.away_score > match.home_score ? 'winner' : '' %>">
+                <% if (match.played) { %>
+                    <div class="team-score"><%= match.away_score %></div>
+                <% } %>
+                <div class="team-name"><%= match.away_team_name || 'TBD' %></div>
+            </div>
+        </div>
+    </section>
+    
+    <% if (match.played) { %>
+        <section class="match-details">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="goals"><%= t.match.goals %></button>
+                <button class="tab-btn" data-tab="cards"><%= t.match.cards %></button>
+            </div>
+            
+            <div class="tab-content">
+                <div class="tab-pane active" id="goals">
+                    <h2><%= t.match.goals %></h2>
+                    <% if (goals.length === 0) { %>
+                        <p class="no-data"><%= t.match.noGoals %></p>
+                    <% } else { %>
+                        <div class="timeline">
+                            <% goals.forEach(goal => { %>
+                                <div class="timeline-item">
+                                    <div class="timeline-time"><%= goal.minute %>'</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-icon">⚽</div>
+                                        <div class="timeline-text">
+                                            <strong><%= goal.player_name %></strong> 
+                                            <span class="team">(<%= goal.team_name %>)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+                
+                <div class="tab-pane" id="cards">
+                    <h2><%= t.match.cards %></h2>
+                    <% if (cards.length === 0) { %>
+                        <p class="no-data"><%= t.match.noCards %></p>
+                    <% } else { %>
+                        <div class="timeline">
+                            <% cards.forEach(card => { %>
+                                <div class="timeline-item">
+                                    <div class="timeline-time"><%= card.minute %>'</div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-icon">
+                                            <% if (card.card_type === 'Yellow') { %>
+                                                <span class="yellow-card">🟨</span>
+                                            <% } else { %>
+                                                <span class="red-card">🟥</span>
+                                            <% } %>
+                                        </div>
+                                        <div class="timeline-text">
+                                            <strong><%= card.player_name %></strong> 
+                                            <span class="team">(<%= card.team_name %>)</span>
+                                            <span class="card-type"><%= card.card_type %> Card</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    <% } else { %>
+        <section class="match-preview">
+            <h2>Match Preview</h2>
+            <p>This match has not been played yet. Check back after <%= match.match_date %> <%= match.match_time %> for the results and details.</p>
+        </section>
+    <% } %>
+    
+    <div class="back-button">
+        <a href="/fixtures?stage=<%= encodeURIComponent(match.stage) %>" class="btn secondary-btn">
+            <i class="fas fa-arrow-left"></i> <%= t.navigation.fixtures %>
+        </a>
+    </div>
+</div>
+
+<script>
+    // Tab functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                // Update active tab button
+                tabBtns.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active tab pane
+                tabPanes.forEach(pane => pane.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    });
+</script>

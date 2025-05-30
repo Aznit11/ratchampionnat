@@ -1,0 +1,205 @@
+
+            <div class="admin-header">
+                <h1>Manage Teams</h1>
+                <div class="admin-user">
+                    <span><i class="fas fa-user"></i> Admin</span>
+                </div>
+            </div>
+            
+            <div class="admin-filters">
+                <div class="filter-group">
+                    <label for="group-filter">Filter by Group:</label>
+                    <select id="group-filter" class="form-control">
+                        <option value="all">All Groups</option>
+                        <option value="A">Group A</option>
+                        <option value="B">Group B</option>
+                        <option value="C">Group C</option>
+                        <option value="D">Group D</option>
+                        <option value="E">Group E</option>
+                        <option value="F">Group F</option>
+                        <option value="G">Group G</option>
+                        <option value="H">Group H</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="search">Search:</label>
+                    <input type="text" id="search" class="form-control" placeholder="Search teams...">
+                </div>
+                
+                <div class="filter-group action-buttons">
+                    <button id="add-team-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Team
+                    </button>
+                </div>
+            </div>
+            
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Team Name</th>
+                            <th>Group</th>
+                            <th>Position in Group</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% teams.forEach(team => { %>
+                            <tr data-group="<%= team.group_name %>">
+                                <td><%= team.id %></td>
+                                <td><%= team.name %></td>
+                                <td>Group <%= team.group_name %></td>
+                                <td><%= team.team_in_group_id %></td>
+                                <td>
+                                    <button class="btn btn-sm btn-edit" data-id="<%= team.id %>" data-name="<%= team.name %>">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-delete" data-id="<%= team.id %>" data-name="<%= team.name %>">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+<!-- Edit Team Modal -->
+<div class="modal" id="editTeamModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Team</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="editTeamForm" action="/admin/teams/update" method="POST">
+            <input type="hidden" id="team-id" name="id">
+            <div class="form-group">
+                <label for="team-name">Team Name:</label>
+                <input type="text" id="team-name" name="name" class="form-control" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Team Modal -->
+<div class="modal" id="addTeamModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add New Team</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="addTeamForm" action="/admin/teams/add" method="POST">
+            <div class="form-group">
+                <label for="new-team-name">Team Name:</label>
+                <input type="text" id="new-team-name" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="new-team-group">Group:</label>
+                <select id="new-team-group" name="group_id" class="form-control" required>
+                    <% teams.reduce((groups, team) => {
+                        if (!groups.includes(team.group_id)) {
+                            groups.push(team.group_id);
+                        }
+                        return groups;
+                    }, []).forEach(groupId => {
+                        const groupName = teams.find(t => t.group_id === groupId).group_name;
+                    %>
+                        <option value="<%= groupId %>">Group <%= groupName %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelAdd">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Team</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Team Confirmation Modal -->
+<div class="modal" id="deleteTeamModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Confirm Delete</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="deleteTeamForm" action="/admin/teams/delete" method="POST">
+            <input type="hidden" id="delete-team-id" name="id">
+            <div class="form-group">
+                <p>Are you sure you want to delete the team <strong id="delete-team-name"></strong>?</p>
+                <p class="warning">This action cannot be undone and will remove all associated match data.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete Team</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Filter teams by group
+    document.getElementById('group-filter').addEventListener('change', function() {
+        const selectedGroup = this.value;
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            if (selectedGroup === 'all' || row.getAttribute('data-group') === selectedGroup) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Search teams
+    document.getElementById('search').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const teamName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            if (teamName.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+    
+    // Edit team modal
+    const modal = document.getElementById('editTeamModal');
+    const editButtons = document.querySelectorAll('.btn-edit');
+    const closeModal = document.querySelector('.close-modal');
+    const cancelButton = document.getElementById('cancelEdit');
+    
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const teamId = this.getAttribute('data-id');
+            const teamName = this.getAttribute('data-name');
+            
+            document.getElementById('team-id').value = teamId;
+            document.getElementById('team-name').value = teamName;
+            
+            modal.style.display = 'block';
+        });
+    });
+    
+    function closeModalFunction() {
+        modal.style.display = 'none';
+    }
+    
+    closeModal.addEventListener('click', closeModalFunction);
+    cancelButton.addEventListener('click', closeModalFunction);
+    
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeModalFunction();
+        }
+    });
+</script>

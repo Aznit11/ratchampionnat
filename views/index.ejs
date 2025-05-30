@@ -1,0 +1,154 @@
+<div class="container">
+    <section class="hero">
+        <div class="hero-content">
+            <h1><%- t.home.heroTitle.replace(/\n/g, '<br>') %></h1>
+            <p><%= t.home.heroSubtitle %></p>
+            <div class="hero-buttons">
+                <a href="/groups" class="btn primary-btn"><%= t.home.viewGroups %></a>
+                <a href="/fixtures?stage=Group%20Stage" class="btn secondary-btn"><%= t.home.matchSchedule %></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="upcoming-matches">
+        <h2><%= t.home.upcomingMatches %></h2>
+        <div class="matches-grid" id="upcoming-matches-container">
+            <% if (typeof upcomingMatches === 'undefined' || upcomingMatches.length === 0) { %>
+                <p class="no-data"><%= t.home.noUpcomingMatches %></p>
+            <% } else { %>
+                <% upcomingMatches.forEach(function(match) { %>
+                    <div class="match-card">
+                        <div class="match-date"><%= formatDate(match.match_date) %> - <%= formatTime(match.match_time) %></div>
+                        <div class="match-stage"><%= match.stage || 'Match' %></div>
+                        <div class="match-teams">
+                            <div class="team home-team">
+                                <span class="team-name"><%= match.home_team_name || 'TBD' %></span>
+                            </div>
+                            <div class="match-score"><%= t.home.vs %></div>
+                            <div class="team away-team">
+                                <span class="team-name"><%= match.away_team_name || 'TBD' %></span>
+                            </div>
+                        </div>
+                        <a href="/match/<%= match.id %>" class="match-link">Match Details</a>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </section>
+
+    <section class="latest-results">
+        <h2><%= t.home.latestResults %></h2>
+        <div class="matches-grid" id="latest-results-container">
+            <% if (typeof latestResults === 'undefined' || latestResults.length === 0) { %>
+                <p class="no-data"><%= t.home.noRecentResults %></p>
+            <% } else { %>
+                <% latestResults.forEach(function(match) { %>
+                    <div class="match-card">
+                        <div class="match-date"><%= formatDate(match.match_date) %> - <%= formatTime(match.match_time) %></div>
+                        <div class="match-stage"><%= match.stage || 'Match' %></div>
+                        <div class="match-teams">
+                            <div class="team home-team <%= (match.home_score > match.away_score) ? 'winner' : '' %>">
+                                <span class="team-name"><%= match.home_team_name || 'TBD' %></span>
+                            </div>
+                            <div class="match-score"><%= match.home_score || 0 %> - <%= match.away_score || 0 %></div>
+                            <div class="team away-team <%= (match.away_score > match.home_score) ? 'winner' : '' %>">
+                                <span class="team-name"><%= match.away_team_name || 'TBD' %></span>
+                            </div>
+                        </div>
+                        <a href="/match/<%= match.id %>" class="match-link">Match Details</a>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </section>
+
+    <section class="tournament-info">
+        <h2><%= t.home.tournamentInfo %></h2>
+        <div class="info-cards">
+            <div class="info-card">
+                <i class="fas fa-users"></i>
+                <h3><%= t.home.teams %></h3>
+                <p><%= t.home.teamsSubtext %></p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-calendar-alt"></i>
+                <h3><%= t.home.groupStage %></h3>
+                <p><%= t.home.groupStageSubtext %></p>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-trophy"></i>
+                <h3><%= t.home.knockoutRounds %></h3>
+                <p><%= t.home.knockoutRoundsSubtext %></p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Format date and time utility functions for server-side EJS templates
+    function formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) {
+                return dateStr; 
+            }
+            return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        } catch (error) {
+            return dateStr;
+        }
+    }
+
+    function formatTime(timeStr) {
+        if (!timeStr) return '';
+        
+        try {
+            // Parse time in 24-hour format
+            const [hours, minutes] = timeStr.split(':');
+            
+            if (!hours || !minutes) {
+                return timeStr;
+            }
+            
+            // Convert to 12-hour format
+            let hour = parseInt(hours, 10);
+            if (isNaN(hour)) {
+                return timeStr;
+            }
+            
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            hour = hour % 12;
+            hour = hour ? hour : 12; // the hour '0' should be '12'
+            
+            return `${hour}:${minutes} ${ampm}`;
+        } catch (error) {
+            return timeStr;
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Index page loaded with server-rendered match data');
+        
+        // Add a test button to manually check the API
+        const testButton = document.createElement('button');
+        testButton.textContent = 'Run API Tests';
+        testButton.style.position = 'fixed';
+        testButton.style.bottom = '20px';
+        testButton.style.right = '20px';
+        testButton.style.zIndex = '1000';
+        testButton.style.padding = '10px 15px';
+        testButton.style.backgroundColor = '#4CAF50';
+        testButton.style.color = 'white';
+        testButton.style.border = 'none';
+        testButton.style.borderRadius = '4px';
+        testButton.style.cursor = 'pointer';
+        
+        testButton.onclick = function() {
+            window.location.href = '/test.html';
+        };
+        
+        document.body.appendChild(testButton);
+    });
+</script>
+
+</script>
