@@ -10,6 +10,11 @@
                 <a href="/admin/matches?stage=<%= encodeURIComponent(match.stage) %>" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Matches
                 </a>
+                <% if (match.played) { %>
+                <a href="/admin/match/<%= match.id %>/image" class="modern-action-button image-generator-button">
+                    <i class="fas fa-image"></i> Generate Social Media Image
+                </a>
+                <% } %>
             </div>
             
             <div class="admin-section">
@@ -66,6 +71,23 @@
                         <button type="submit" class="btn btn-primary">Update Match</button>
                     </div>
                 </form>
+                
+                <!-- Match data for image generator (explicitly visible for debugging) -->
+                <div id="match-data-for-image" style="background: #f9f9f9; padding: 15px; margin-top: 20px; border: 1px solid #ddd; border-radius: 4px;">
+                    <h3>Match Data for Image Generator</h3>
+                    <p><strong>Home Team:</strong> <span id="home-team-name"><%= teams.find(t => t.id == match.home_team_id)?.name || 'TBD' %></span></p>
+                    <p><strong>Away Team:</strong> <span id="away-team-name"><%= teams.find(t => t.id == match.away_team_id)?.name || 'TBD' %></span></p>
+                    <p><strong>Stage:</strong> <span id="match-stage"><%= match.stage %></span></p>
+                    <p><strong>Date:</strong> <span id="match-date-display"><%= match.match_date %></span></p>
+                    <p><strong>Time:</strong> <span id="match-time-display"><%= match.match_time %></span></p>
+                    <% if (match.played) { %>
+                    <p><strong>Home Score:</strong> <span id="home-score-display"><%= match.home_score %></span></p>
+                    <p><strong>Away Score:</strong> <span id="away-score-display"><%= match.away_score %></span></p>
+                    <% } %>
+                    <button id="generate-match-image-inline" class="download-match-image" style="margin-top: 10px;">
+                        <i class="fas fa-image"></i> Generate Social Media Image (Inline Button)
+                    </button>
+                </div>
             </div>
             
             <div class="admin-section">

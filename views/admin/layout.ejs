@@ -9,6 +9,7 @@
     <title>Admin - Rat Ait Bououlli League</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/admin-buttons.css">
     <link rel="stylesheet" href="/css/admin-mobile.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -114,5 +115,11 @@
             });
         });
     </script>
+    
+    <!-- Match Image Generator - Only load on match pages -->
+    <% if (path.includes('/admin/match/')) { %>
+    <link rel="stylesheet" href="/css/match-image-generator.css">
+    <script src="/js/enhanced-match-image.js"></script>
+    <% } %>
 </body>
 </html>

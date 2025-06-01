@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Result Image Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1a2a6c;
+            font-size: 32px;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #1a2a6c 0%, #2a3a9c 50%, #1a2a6c 100%);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .page-header p {
+            margin-top: 10px;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        /* Match Data Form */
+        .match-data-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a2a6c;
+        }
+        
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a2a6c;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            background-color: #3e8e41;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn i {
+            font-size: 20px;
+        }
+        
+        /* Preview Section */
+        .preview-section {
+            display: none;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .preview-section h2 {
+            margin-bottom: 20px;
+            color: #1a2a6c;
+        }
+        
+        .canvas-container {
+            max-width: 100%;
+            overflow: auto;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .canvas-container canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .preview-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-download {
+            background-color: #2196F3;
+        }
+        
+        .btn-download:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-back {
+            background-color: #f44336;
+        }
+        
+        .btn-back:hover {
+            background-color: #d32f2f;
+        }
+        
+        /* Back Button */
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .preview-actions {
+                flex-direction: column;
+            }
+            
+            .preview-actions .btn {
+                margin-bottom: 10px;
+            }
+            
+            .page-header h1 {
+                font-size: 24px;
+            }
+            
+            .page-header p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Match Result Image Generator</h1>
+            <p>Create beautiful social media images for your match results</p>
+        </div>
+        
+        <a href="/admin/matches?stage=<%= encodeURIComponent(match.stage) %>" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Matches
+        </a>
+        
+        <div class="match-data-form">
+            <h2>Match Information</h2>
+            <p>The current match data is shown below. You can update it if needed before generating the image.</p>
+            
+            <form id="match-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stage">Stage</label>
+                        <input type="text" id="stage" value="<%= match.stage %>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="match-date">Match Date</label>
+                        <input type="text" id="match-date" value="<%= match.match_date %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="match-time">Match Time</label>
+                        <input type="text" id="match-time" value="<%= match.match_time %>">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="home-team">Home Team</label>
+                        <input type="text" id="home-team" value="<%= teams.find(t => t.id == match.home_team_id)?.name || 'TBD' %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="home-score">Home Score</label>
+                        <input type="number" id="home-score" value="<%= match.home_score %>" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="away-team">Away Team</label>
+                        <input type="text" id="away-team" value="<%= teams.find(t => t.id == match.away_team_id)?.name || 'TBD' %>">
+                    </div>
+                    <div class="form-group">
+                        <label for="away-score">Away Score</label>
+                        <input type="number" id="away-score" value="<%= match.away_score %>" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="generate-btn" class="btn">
+                        <i class="fas fa-image"></i> Generate Social Media Image
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="preview-section" id="preview-section">
+            <h2>Preview</h2>
+            <div class="canvas-container" id="canvas-container"></div>
+            
+            <div class="preview-actions">
+                <button id="download-btn" class="btn btn-download">
+                    <i class="fas fa-download"></i> Download Image
+                </button>
+                <button id="back-btn" class="btn btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Form
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2025 Rat Ait Bououlli League. All rights reserved.</p>
+    </footer>
+    
+    <script>
+        // Initialize when document is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const generateBtn = document.getElementById('generate-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const backBtn = document.getElementById('back-btn');
+            const matchForm = document.getElementById('match-form');
+            const previewSection = document.getElementById('preview-section');
+            const canvasContainer = document.getElementById('canvas-container');
+            
+            // Add event listeners
+            generateBtn.addEventListener('click', generateMatchImage);
+            downloadBtn.addEventListener('click', downloadMatchImage);
+            backBtn.addEventListener('click', function() {
+                previewSection.style.display = 'none';
+            });
+            
+            // Generate match image
+            function generateMatchImage() {
+                // Get form data
+                const stage = document.getElementById('stage').value;
+                const matchDate = document.getElementById('match-date').value;
+                const matchTime = document.getElementById('match-time').value;
+                const homeTeam = document.getElementById('home-team').value;
+                const awayTeam = document.getElementById('away-team').value;
+                const homeScore = document.getElementById('home-score').value;
+                const awayScore = document.getElementById('away-score').value;
+                
+                // Create canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 1200;
+                canvas.height = 630;
+                const ctx = canvas.getContext('2d');
+                
+                // Create match image
+                createMatchImage(ctx, {
+                    stage,
+                    matchDate,
+                    matchTime,
+                    homeTeam,
+                    awayTeam,
+                    homeScore,
+                    awayScore
+                });
+                
+                // Show preview
+                canvasContainer.innerHTML = '';
+                canvasContainer.appendChild(canvas);
+                previewSection.style.display = 'block';
+                
+                // Scroll to preview
+                previewSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // Create match image on canvas
+            function createMatchImage(ctx, data) {
+                const canvasWidth = ctx.canvas.width;
+                const canvasHeight = ctx.canvas.height;
+                
+                // Draw background gradient
+                const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+                gradient.addColorStop(0, '#1a2a6c');
+                gradient.addColorStop(0.5, '#2a3a9c');
+                gradient.addColorStop(1, '#1a2a6c');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+                
+                // Draw pattern overlay
+                ctx.save();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                for (let x = 0; x < canvasWidth; x += 20) {
+                    for (let y = 0; y < canvasHeight; y += 20) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, 1, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                ctx.restore();
+                
+                // Draw league title
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 48px Montserrat, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+                ctx.fillText('Rat Ait Bououlli League', canvasWidth / 2, 40);
+                
+                // Draw stage
+                ctx.font = '30px Montserrat, Arial, sans-serif';
+                ctx.shadowBlur = 5;
+                ctx.fillText(data.stage, canvasWidth / 2, 100);
+                
+                // Draw date and time
+                ctx.font = '24px Montserrat, Arial, sans-serif';
+                ctx.fillText(data.matchDate + ' | ' + data.matchTime, canvasWidth / 2, 140);
+                
+                // Draw team sections
+                ctx.shadowBlur = 0;
+                
+                // Home team
+                drawTeamSection(ctx, {
+                    x: canvasWidth / 4,
+                    y: 200,
+                    team: data.homeTeam,
+                    score: data.homeScore,
+                    isWinner: parseInt(data.homeScore) > parseInt(data.awayScore)
+                });
+                
+                // Away team
+                drawTeamSection(ctx, {
+                    x: (canvasWidth / 4) * 3,
+                    y: 200,
+                    team: data.awayTeam,
+                    score: data.awayScore,
+                    isWinner: parseInt(data.awayScore) > parseInt(data.homeScore)
+                });
+                
+                // Draw VS
+                ctx.font = 'bold 36px Montserrat, Arial, sans-serif';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fillText('VS', canvasWidth / 2, 280);
+                
+                // Draw result banner
+                if (parseInt(data.homeScore) !== parseInt(data.awayScore)) {
+                    const winner = parseInt(data.homeScore) > parseInt(data.awayScore) ? 
+                                data.homeTeam : data.awayTeam;
+                    
+                    // Banner background
+                    ctx.fillStyle = 'rgba(76, 175, 80, 0.8)';
+                    roundRect(ctx, canvasWidth / 2 - 300, 450, 600, 70, 8, true);
+                    
+                    // Banner text
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 36px Montserrat, Arial, sans-serif';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(winner + ' فاز في المباراة', canvasWidth / 2, 485);
+                } else {
+                    // Draw banner for draw
+                    ctx.fillStyle = 'rgba(255, 152, 0, 0.8)';
+                    roundRect(ctx, canvasWidth / 2 - 300, 450, 600, 70, 8, true);
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 36px Montserrat, Arial, sans-serif';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('تعادل الفريقين', canvasWidth / 2, 485);
+                }
+                
+                // Draw footer
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.font = '18px Montserrat, Arial, sans-serif';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText('© 2025 Rat Ait Bououlli League', canvasWidth / 2, canvasHeight - 20);
+            }
+            
+            // Draw team section on canvas
+            function drawTeamSection(ctx, options) {
+                const { x, y, team, score, isWinner } = options;
+                
+                // Draw team name with modern styling
+                ctx.save();
+                
+                // Create team name background
+                const textWidth = ctx.measureText(team).width;
+                const padding = 30;
+                const bgWidth = textWidth + (padding * 2);
+                
+                // Background with gradient
+                const gradient = ctx.createLinearGradient(x - bgWidth/2, y, x + bgWidth/2, y);
+                if (isWinner) {
+                    gradient.addColorStop(0, 'rgba(76, 175, 80, 0.3)');
+                    gradient.addColorStop(1, 'rgba(76, 175, 80, 0.1)');
+                } else {
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+                }
+                
+                // Draw rounded rectangle for team name
+                ctx.fillStyle = gradient;
+                roundRect(ctx, x - bgWidth/2, y, bgWidth, 60, 10, true);
+                
+                // Add subtle border
+                ctx.strokeStyle = isWinner ? 'rgba(76, 175, 80, 0.6)' : 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 2;
+                roundRect(ctx, x - bgWidth/2, y, bgWidth, 60, 10, false, true);
+                
+                // Draw team name with shadow
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 28px Montserrat, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                ctx.shadowBlur = 5;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+                ctx.fillText(team, x, y + 30);
+                ctx.restore();
+                
+                // Draw score with modern styling
+                ctx.save();
+                
+                // Create score background with glow
+                if (isWinner) {
+                    ctx.fillStyle = 'rgba(76, 175, 80, 0.8)';
+                    ctx.shadowColor = 'rgba(76, 175, 80, 0.5)';
+                } else {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+                }
+                
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 5;
+                
+                // Draw pill-shaped score container
+                roundRect(ctx, x - 50, y + 80, 100, 60, 30, true);
+                
+                // Draw score text
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 36px Montserrat, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 5;
+                ctx.fillText(score, x, y + 110);
+                ctx.restore();
+                
+                // Add winner indicator if this team won
+                if (isWinner) {
+                    ctx.save();
+                    
+                    // Draw winner badge
+                    const badgeGradient = ctx.createLinearGradient(x - 40, y - 30, x + 40, y - 30);
+                    badgeGradient.addColorStop(0, '#4CAF50');
+                    badgeGradient.addColorStop(1, '#2E7D32');
+                    
+                    ctx.fillStyle = badgeGradient;
+                    roundRect(ctx, x - 40, y - 30, 80, 30, 15, true);
+                    
+                    // Add winner text
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '14px Montserrat, Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('WINNER', x, y - 15);
+                    ctx.restore();
+                }
+            }
+            
+            // Helper function to draw rounded rectangles
+            function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+                if (typeof stroke === 'undefined') {
+                    stroke = false;
+                }
+                if (typeof radius === 'undefined') {
+                    radius = 5;
+                }
+                if (typeof radius === 'number') {
+                    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+                } else {
+                    const defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+                    for (let side in defaultRadius) {
+                        radius[side] = radius[side] || defaultRadius[side];
+                    }
+                }
+                ctx.beginPath();
+                ctx.moveTo(x + radius.tl, y);
+                ctx.lineTo(x + width - radius.tr, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+                ctx.lineTo(x + width, y + height - radius.br);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+                ctx.lineTo(x + radius.bl, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+                ctx.lineTo(x, y + radius.tl);
+                ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+                ctx.closePath();
+                if (fill) {
+                    ctx.fill();
+                }
+                if (stroke) {
+                    ctx.stroke();
+                }
+            }
+            
+            // Download match image
+            function downloadMatchImage() {
+                const canvas = canvasContainer.querySelector('canvas');
+                if (canvas) {
+                    const link = document.createElement('a');
+                    link.download = 'match-result.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+/* Modern Admin Buttons CSS 
+   Designed to complement match-card-enhancement.css with similar gradient effects and styling */
+
+.modern-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+}
+
+.modern-action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modern-action-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modern-action-button i {
+    font-size: 16px;
+}
+
+/* Image Generator Button with Gradient - Enhanced to match match-card styling */
+.image-generator-button {
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+    border-left: 4px solid #43A047;
+    text-transform: uppercase;
+    font-weight: 700;
+    animation: buttonAppear 0.5s ease-out forwards;
+}
+
+@keyframes buttonAppear {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.image-generator-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transition: all 0.6s ease;
+    z-index: 1;
+}
+
+.image-generator-button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(46, 125, 50, 0.3);
+    background: linear-gradient(135deg, #43A047 0%, #2E7D32 100%);
+}
+
+.image-generator-button:hover::before {
+    left: 100%;
+}
+
+.image-generator-button i {
+    position: relative;
+    z-index: 2;
+    font-size: 18px;
+    margin-right: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Other admin button styles */
+.admin-primary-button {
+    background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+}
+
+.admin-danger-button {
+    background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+}
+
+.admin-warning-button {
+    background: linear-gradient(135deg, #FFC107 0%, #FFA000 100%);
+    color: #212121;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modern-action-button {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .modern-action-button i {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modern-action-button {
+        width: 100%;
+        margin-bottom: 10px;
+        justify-content: center;
+        padding: 12px 16px;
+    }
+}

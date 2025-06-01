@@ -906,6 +906,30 @@ app.get('/admin/match/:id', (req, res) => {
   });
 });
 
+// Route for the dedicated match image generator
+app.get('/admin/match/:id/image', authenticateAdmin, (req, res) => {
+  const matchId = req.params.id;
+  
+  db.get(`SELECT * FROM matches WHERE id = ?`, [matchId], (err, match) => {
+    if (err || !match) {
+      return res.redirect('/admin/matches');
+    }
+    
+    db.all('SELECT * FROM teams ORDER BY name', [], (err, teams) => {
+      if (err) {
+        return res.redirect('/admin/matches');
+      }
+      
+      res.render('admin/match-image', { 
+        layout: false, // No layout for this page
+        match, 
+        teams,
+        path: req.path
+      });
+    });
+  });
+});
+
 app.post('/admin/match/:id/update', (req, res) => {
   if (!req.session.admin) {
     return res.redirect('/admin');
