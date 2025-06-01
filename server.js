@@ -1074,130 +1074,113 @@ app.get('/admin/logout', (req, res) => {
 });
 
 // Function to update Round of 16 matches based on group stage results
+// Update Round of 16 matches based on group standings
 function updateRoundOf16Matches() {
-  console.log('Updating Round of 16 matches based on group results...');
+  console.log('Updating Round of 16 matches based on group standings...');
   
-  // First, get all the groups
-  db.all(`SELECT id, name FROM groups ORDER BY id`, [], (err, groups) => {
+  // Get all group winners
+  const winnersQuery = `
+    SELECT t.id, t.name, g.name as group_name
+    FROM teams t
+    JOIN groups g ON t.group_id = g.id
+    WHERE t.team_in_group_id = 1
+    ORDER BY g.id
+  `;
+  
+  // Get all group runners-up
+  const runnersUpQuery = `
+    SELECT t.id, t.name, g.name as group_name
+    FROM teams t
+    JOIN groups g ON t.group_id = g.id
+    WHERE t.team_in_group_id = 2
+    ORDER BY g.id
+  `;
+  
+  db.all(winnersQuery, [], (err, winners) => {
     if (err) {
-      console.error('Error getting groups:', err.message);
+      console.error('Error getting group winners:', err.message);
       return;
     }
     
-    // Process each group to get standings
-    const groupPromises = groups.map(group => {
-      return new Promise((resolve, reject) => {
-        // Get teams in this group with standings
-        db.all(`
-          SELECT t.id as team_id, t.name as team_name, g.name as group_name,
-          COUNT(CASE WHEN (m.home_team_id = t.id AND m.home_score > m.away_score) OR 
-                       (m.away_team_id = t.id AND m.away_score > m.home_score) 
-                 THEN 1 END) as wins,
-          COUNT(CASE WHEN (m.home_team_id = t.id AND m.home_score = m.away_score) OR 
-                       (m.away_team_id = t.id AND m.away_score = m.home_score) 
-                 THEN 1 END) as draws,
-          COUNT(CASE WHEN (m.home_team_id = t.id AND m.home_score < m.away_score) OR 
-                       (m.away_team_id = t.id AND m.away_score < m.home_score) 
-                 THEN 1 END) as losses,
-          SUM(CASE WHEN m.home_team_id = t.id THEN COALESCE(m.home_score, 0) ELSE 0 END) + 
-          SUM(CASE WHEN m.away_team_id = t.id THEN COALESCE(m.away_score, 0) ELSE 0 END) as goals_for,
-          SUM(CASE WHEN m.home_team_id = t.id THEN COALESCE(m.away_score, 0) ELSE 0 END) + 
-          SUM(CASE WHEN m.away_team_id = t.id THEN COALESCE(m.home_score, 0) ELSE 0 END) as goals_against,
-          SUM(CASE WHEN m.home_team_id = t.id THEN COALESCE(m.home_score, 0) - COALESCE(m.away_score, 0) ELSE 0 END) + 
-          SUM(CASE WHEN m.away_team_id = t.id THEN COALESCE(m.away_score, 0) - COALESCE(m.home_score, 0) ELSE 0 END) as goal_difference,
-          (COUNT(CASE WHEN (m.home_team_id = t.id AND m.home_score > m.away_score) OR 
-                         (m.away_team_id = t.id AND m.away_score > m.home_score) 
-                   THEN 1 END) * 3) + 
-          COUNT(CASE WHEN (m.home_team_id = t.id AND m.home_score = m.away_score) OR 
-                        (m.away_team_id = t.id AND m.away_score = m.home_score) 
-                  THEN 1 END) as points
-          FROM teams t
-          JOIN groups g ON t.group_id = g.id
-          LEFT JOIN matches m ON (m.home_team_id = t.id OR m.away_team_id = t.id) AND m.stage = 'Group Stage' AND m.played = 1
-          WHERE t.group_id = ?
-          GROUP BY t.id
-          ORDER BY points DESC, goal_difference DESC, goals_for DESC, t.name
-        `, [group.id], (err, teamStandings) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          
-          // Get the winner and runner-up
-          const winner = teamStandings.length > 0 ? teamStandings[0] : null;
-          const runnerUp = teamStandings.length > 1 ? teamStandings[1] : null;
-          
-          // Debug output to verify correct data
-          if (winner) {
-            console.log(`Group ${group.name} winner: ${winner.team_name} (ID: ${winner.team_id})`);
-          }
-          if (runnerUp) {
-            console.log(`Group ${group.name} runner-up: ${runnerUp.team_name} (ID: ${runnerUp.team_id})`);
-          }
-          
-          resolve({
-            group: group,
-            winner: winner,
-            runnerUp: runnerUp
-          });
-        });
-      });
-    });
-    
-    // Process all groups and then update Round of 16 matches
-    Promise.all(groupPromises)
-      .then(groupResults => {
-        // Create mappings for placeholders
-        const placeholderToTeam = {};
+    db.all(runnersUpQuery, [], (err, runnersUp) => {
+      if (err) {
+        console.error('Error getting group runners-up:', err.message);
+        return;
+      }
+      
+      console.log(`Found ${winners.length} group winners and ${runnersUp.length} runners-up`);
+      
+      // Only proceed if we have all 8 group winners and 8 runners-up
+      if (winners.length === 8 && runnersUp.length === 8) {
+        // Map winners and runners-up to their respective groups (A-H)
+        const groupWinners = {};
+        const groupRunnersUp = {};
         
-        groupResults.forEach(result => {
-          if (result.winner && result.group) {
-            const groupLetter = result.group.name.charAt(result.group.name.length - 1);
-            placeholderToTeam[`Winner Group ${groupLetter}`] = result.winner.team_id;
-          }
-          if (result.runnerUp && result.group) {
-            const groupLetter = result.group.name.charAt(result.group.name.length - 1);
-            placeholderToTeam[`Runner-up Group ${groupLetter}`] = result.runnerUp.team_id;
-          }
+        winners.forEach(team => {
+          const groupLetter = team.group_name.slice(-1); // Extract the last character (e.g., "A" from "Group A")
+          groupWinners[groupLetter] = team.id;
         });
         
-        // Find Round of 16 matches that need to be updated
-        db.all(`SELECT id, stage, home_team_id, away_team_id, home_placeholder, away_placeholder FROM matches WHERE stage = 'Round of 16' ORDER BY id`, [], (err, r16Matches) => {
+        runnersUp.forEach(team => {
+          const groupLetter = team.group_name.slice(-1);
+          groupRunnersUp[groupLetter] = team.id;
+        });
+        
+        // Get the Round of 16 matches
+        db.all('SELECT * FROM matches WHERE stage = "Round of 16" ORDER BY match_date, match_time', [], (err, matches) => {
           if (err) {
             console.error('Error getting Round of 16 matches:', err.message);
             return;
           }
           
-          console.log('Placeholders to team mapping:', placeholderToTeam);
-          console.log('Round of 16 matches:', r16Matches);
-          
-          // Update each Round of 16 match
-          r16Matches.forEach(match => {
-            const homeTeamId = placeholderToTeam[match.home_placeholder];
-            const awayTeamId = placeholderToTeam[match.away_placeholder];
+          if (matches.length === 8) {
+            // Day 1 matches
+            const day1Matches = matches.slice(0, 4);
+            // Match 1: A1 vs B2
+            updateMatch(day1Matches[0], groupWinners['A'], groupRunnersUp['B']);
+            // Match 2: A2 vs B1
+            updateMatch(day1Matches[1], groupRunnersUp['A'], groupWinners['B']);
+            // Match 3: C1 vs D2
+            updateMatch(day1Matches[2], groupWinners['C'], groupRunnersUp['D']);
+            // Match 4: C2 vs D1
+            updateMatch(day1Matches[3], groupRunnersUp['C'], groupWinners['D']);
             
-            console.log(`Match ${match.id}: Home placeholder '${match.home_placeholder}' maps to team ID ${homeTeamId}`);
-            console.log(`Match ${match.id}: Away placeholder '${match.away_placeholder}' maps to team ID ${awayTeamId}`);
+            // Day 2 matches
+            const day2Matches = matches.slice(4, 8);
+            // Match 5: E1 vs F2
+            updateMatch(day2Matches[0], groupWinners['E'], groupRunnersUp['F']);
+            // Match 6: E2 vs F1
+            updateMatch(day2Matches[1], groupRunnersUp['E'], groupWinners['F']);
+            // Match 7: G1 vs H2
+            updateMatch(day2Matches[2], groupWinners['G'], groupRunnersUp['H']);
+            // Match 8: G2 vs H1
+            updateMatch(day2Matches[3], groupRunnersUp['G'], groupWinners['H']);
             
-            if (homeTeamId && awayTeamId) {
-              db.run('UPDATE matches SET home_team_id = ?, away_team_id = ? WHERE id = ?', 
-                [homeTeamId, awayTeamId, match.id], function(err) {
-                if (err) {
-                  console.error(`Error updating Round of 16 match ${match.id}:`, err.message);
-                } else {
-                  console.log(`Successfully updated Round of 16 match ${match.id} with teams ${homeTeamId} vs ${awayTeamId}`);
-                }
-              });
-            } else {
-              console.warn(`Missing team ID for match ${match.id}: home=${homeTeamId}, away=${awayTeamId}`);
-            }
-          });
+            console.log('Round of 16 matches updated successfully!');
+          } else {
+            console.error(`Expected 8 Round of 16 matches, but found ${matches.length}`);
+          }
         });
-      })
-      .catch(err => {
-        console.error('Error processing group results:', err);
-      });
+      } else {
+        console.log('Not all group stages are complete yet');
+      }
+    });
   });
+  
+  // Helper function to update a match with team IDs
+  function updateMatch(match, homeTeamId, awayTeamId) {
+    db.run(
+      'UPDATE matches SET home_team_id = ?, away_team_id = ? WHERE id = ?',
+      [homeTeamId, awayTeamId, match.id],
+      function(err) {
+        if (err) {
+          console.error(`Error updating match ${match.id}:`, err.message);
+        } else {
+          console.log(`Updated match ${match.id} with teams ${homeTeamId} vs ${awayTeamId}`);
+        }
+      }
+    );
+  }
 }
 
 // Function to update quarter-final matches based on Round of 16 results

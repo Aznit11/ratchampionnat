@@ -1,0 +1,33 @@
+
+Round of 16 Fix Verification
+===========================
+
+The Round of 16 matches have been completely restructured to have exactly 8 matches across 2 days:
+
+Day 1 (June 25, 2025):
+- Match 1: A1 vs B2 (16:00)
+- Match 2: A2 vs B1 (18:00)
+- Match 3: C1 vs D2 (20:00)
+- Match 4: C2 vs D1 (22:00)
+
+Day 2 (June 27, 2025):
+- Match 5: E1 vs F2 (16:00)
+- Match 6: E2 vs F1 (18:00)
+- Match 7: G1 vs H2 (20:00)
+- Match 8: G2 vs H1 (22:00)
+
+To verify this is working properly:
+
+1. Restart the server: 
+   node server.js
+
+2. Visit the fixtures page in your browser to check that:
+   - Round of 16 matches are showing up in exactly 2 days
+   - Each day has exactly 4 matches
+   - The matches are in the correct order with the correct times
+
+3. Once the group stage is complete, the updateRoundOf16Matches function will:
+   - Update each match with the proper teams based on group standings
+   - Maintain the correct matchups (A1 vs B2, etc.)
+
+The database and server.js have both been updated to ensure this structure works correctly.

@@ -1,0 +1,26 @@
+/* Match Details Enhancements */
+
+/* Make team names white only in the match details page */
+.match-header .team-name {
+  color: #ffffff !important; /* Using !important to override for specific match detail page */
+  font-weight: 600;
+}
+
+/* Restore original styling for all other match cards */
+.fixtures-container .team-name,
+.matches-grid .team-name,
+.match-card .team-name {
+  color: inherit; /* Use the inherited text color */
+  font-weight: 600;
+}
+
+/* Style adjustments specific to the match details page */
+.match-header .match-teams {
+  color: #ffffff;
+}
+
+/* Style for the status text to ensure it's visible */
+.match-header .match-status .status-text {
+  color: #ffffff;
+  font-weight: 500;
+}

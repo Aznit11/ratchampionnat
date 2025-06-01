@@ -1,0 +1,45 @@
+/* Enhanced Button Styles */
+
+/* Make the Preview button more visually appealing */
+.match-link {
+  display: inline-block;
+  padding: 8px 16px !important;
+  background: linear-gradient(135deg, #064c90, #1a73e8) !important;
+  color: #ffffff !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  border: none;
+  min-width: 90px;
+}
+
+.match-link:hover {
+  background: linear-gradient(135deg, #1a73e8, #3b8eff) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Special styling for Preview buttons */
+a.match-link:contains("Preview") {
+  background: linear-gradient(135deg, #fbbc05, #ffce3a) !important;
+  color: #333 !important;
+}
+
+a.match-link:contains("Preview"):hover {
+  background: linear-gradient(135deg, #ffce3a, #ffd761) !important;
+}
+
+/* Fallback since :contains is not widely supported */
+.match-row:not(.played) .match-link {
+  background: linear-gradient(135deg, #fbbc05, #ffce3a) !important;
+  color: #333 !important;
+}
+
+.match-row:not(.played) .match-link:hover {
+  background: linear-gradient(135deg, #ffce3a, #ffd761) !important;
+}

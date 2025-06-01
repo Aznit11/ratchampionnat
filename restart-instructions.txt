@@ -1,0 +1,21 @@
+STEPS TO FIX THE ROUND OF 16 UI DISPLAY ISSUE:
+
+1. COMPLETELY STOP YOUR SERVER
+   - If running in a terminal window, press Ctrl+C
+   - Make sure no Node.js processes are running using Task Manager
+   - If needed, run: taskkill /F /IM node.exe
+
+2. CLEAR YOUR BROWSER CACHE
+   - Chrome: Press Ctrl+Shift+Delete, select "Cached images and files", then "Clear data"
+   - Firefox: Press Ctrl+Shift+Delete, select "Cache", then "Clear Now"
+   - Or open a new incognito/private browsing window
+
+3. RESTART THE SERVER
+   - Run: node server.js
+
+4. ACCESS THE ROUND OF 16 PAGE IN A FRESH BROWSER WINDOW
+   - Either use incognito mode or after clearing cache
+
+This should now display exactly 2 days in the Round of 16 section.
+
+If you still see 3 days, please take a screenshot of what you're seeing and share it.

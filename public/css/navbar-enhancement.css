@@ -1,0 +1,250 @@
+/* Navbar Enhancement Styles */
+
+/* Centering the navbar and aligning with language selector */
+header .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 20px;
+  position: relative;
+}
+
+/* Position the logo to the left */
+.logo {
+  position: absolute;
+  left: 20px;
+}
+
+/* Create a wrapper for nav and language selector to keep them centered together */
+.nav-language-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* Space between nav and language selector */
+}
+
+/* Style the navigation */
+nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  margin: 0 10px;
+}
+
+/* Style the language selector to match navbar styling */
+.language-selector {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+.language-selector a {
+  padding: 5px;
+  transition: color 0.3s ease;
+}
+
+.language-selector a.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Ensure mobile menu button is positioned properly */
+.mobile-menu-btn {
+  position: absolute;
+  right: 20px;
+  display: none;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 992px) {
+  header .container {
+    justify-content: space-between;
+  }
+  
+  .logo {
+    position: static;
+  }
+  
+  .nav-language-wrapper {
+    justify-content: flex-end;
+  }
+}
+
+/* Reset base styles for mobile */
+header .nav-language-wrapper nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Mobile menu styles */
+@media (max-width: 768px) {
+  /* Disable hover effect on mobile */
+  .dropdown:hover .dropdown-content {
+    display: none;
+  }
+
+  /* Only show dropdown content when active class is present */
+  .dropdown.active .dropdown-content {
+    display: block !important;
+  }
+  
+  /* Hide the nav wrapper by default */
+  .nav-language-wrapper {
+    display: none;
+  }
+  
+  /* Show mobile menu button */
+  .mobile-menu-btn {
+    display: block;
+    position: static;
+  }
+  
+  /* When mobile menu is active - FORCE DISPLAY */
+  header.mobile-menu-active .nav-language-wrapper {
+    display: flex !important;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--white);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 20px;
+    z-index: 100;
+    width: 100%;
+    border-top: 3px solid #0056b3; /* Blue accent border at top */
+  }
+  
+  /* Make sure the nav is displayed at 100% width */
+  header.mobile-menu-active .main-navigation {
+    width: 100%;
+    margin-bottom: 15px;
+    display: block !important;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu {
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    display: flex !important; /* Force display */
+    margin: 0;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu li {
+    width: 100%;
+    text-align: center;
+    margin: 5px 0;
+    display: block !important; /* Force display */
+    list-style: none;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu li:last-child {
+    border-bottom: none;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu li a {
+    display: block;
+    padding: 12px 15px;
+    font-size: 16px;
+    color: #0056b3 !important; /* Blue text color for better visibility */
+    font-weight: 500;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin: 3px 0;
+    transition: all 0.2s ease;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu li a:hover {
+    background-color: #e9ecef;
+    transform: translateY(-1px);
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu li a i {
+    margin-right: 5px;
+    color: #0056b3;
+  }
+  
+  /* Reset dropdown behavior on mobile */
+  header.mobile-menu-active .main-navigation .main-menu .dropdown > a .fa-caret-down {
+    margin-left: 5px;
+    transition: transform 0.3s ease;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu .dropdown.active > a .fa-caret-down {
+    transform: rotate(180deg);
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu .dropdown-content {
+    position: static;
+    display: none;
+    width: 100%;
+    box-shadow: none;
+    background-color: #f9f9f9;
+    margin-top: 8px;
+    padding: 0;
+    border-radius: 4px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out, padding 0.3s ease;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu .dropdown.active .dropdown-content {
+    display: block !important;
+    max-height: 500px; /* Large enough to contain content */
+    padding: 8px 0;
+  }
+  
+  /* Adjust dropdown items style */
+  header.mobile-menu-active .main-navigation .main-menu .dropdown-content {
+    background-color: #edf2f7 !important;
+    border-radius: 4px;
+    margin-top: 5px !important;
+    padding: 5px !important;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu .dropdown-content a {
+    padding: 10px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    color: #0056b3 !important; /* Blue text color to match parent items */
+    background-color: white;
+    margin: 5px 0;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+  
+  header.mobile-menu-active .main-navigation .main-menu .dropdown-content a:last-child {
+    border-bottom: none;
+  }
+  
+  header.mobile-menu-active .language-selector {
+    margin-top: 15px;
+    text-align: center;
+    display: flex !important;
+    justify-content: center;
+    width: 100%;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  header.mobile-menu-active .language-selector a {
+    padding: 5px 12px;
+    color: #0056b3 !important;
+    font-weight: 500;
+    border-radius: 4px;
+    margin: 0 5px;
+  }
+  
+  header.mobile-menu-active .language-selector a.active {
+    background-color: #0056b3;
+    color: white !important;
+  }
+}

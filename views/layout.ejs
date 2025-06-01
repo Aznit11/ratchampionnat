@@ -13,6 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/enhanced-master.css">
+    <link rel="stylesheet" href="/css/navbar-enhancement.css">
+    <link rel="stylesheet" href="/css/match-details-enhancement.css">
+    <link rel="stylesheet" href="/css/button-enhancements.css">
+    <link rel="stylesheet" href="/css/match-card-enhancement.css">
 </head>
 <body>
     <header>
@@ -20,28 +24,30 @@
             <div class="logo">
                 <h1><i class="fas fa-futbol"></i> <%= t.global.title %></h1>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="/"><i class="fas fa-home"></i> <%= t.navigation.home %></a></li>
-                    <li><a href="/groups"><i class="fas fa-users"></i> <%= t.navigation.groups %></a></li>
-                    <li><a href="/fixtures?stage=Group%20Stage"><i class="fas fa-calendar-alt"></i> <%= t.navigation.fixtures %></a></li>
-                    <li class="dropdown">
-                        <a href="#"><i class="fas fa-trophy"></i> <%= t.navigation.knockoutStages %> <i class="fa fa-caret-down"></i></a>
-                        <div class="dropdown-content">
-                            <a href="/fixtures?stage=Round%20of%2016"><%= t.navigation.roundOf16 %></a>
-                            <a href="/fixtures?stage=Quarter%20Final"><%= t.navigation.quarterFinal %></a>
-                            <a href="/fixtures?stage=Semi%20Final"><%= t.navigation.semiFinal %></a>
-                            <a href="/fixtures?stage=Final"><%= t.navigation.final %></a>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
             </div>
-            <div class="language-selector">
-                <a href="?lang=en" class="<%= currentLanguage === 'en' ? 'active' : '' %>">English</a> | 
-                <a href="?lang=ar" class="<%= currentLanguage === 'ar' ? 'active' : '' %>">العربية</a>
+            <div class="nav-language-wrapper">
+                <nav class="main-navigation">
+                    <ul class="main-menu">
+                        <li><a href="/"><i class="fas fa-home"></i> <%= t.navigation.home %></a></li>
+                        <li><a href="/groups"><i class="fas fa-users"></i> <%= t.navigation.groups %></a></li>
+                        <li><a href="/fixtures?stage=Group%20Stage"><i class="fas fa-calendar-alt"></i> <%= t.navigation.fixtures %></a></li>
+                        <li class="dropdown">
+                            <a href="#"><i class="fas fa-trophy"></i> <%= t.navigation.knockoutStages %> <i class="fa fa-caret-down"></i></a>
+                            <div class="dropdown-content">
+                                <a href="/fixtures?stage=Round%20of%2016"><%= t.navigation.roundOf16 %></a>
+                                <a href="/fixtures?stage=Quarter%20Final"><%= t.navigation.quarterFinal %></a>
+                                <a href="/fixtures?stage=Semi%20Final"><%= t.navigation.semiFinal %></a>
+                                <a href="/fixtures?stage=Final"><%= t.navigation.final %></a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="language-selector">
+                    <a href="?lang=en" class="<%= currentLanguage === 'en' ? 'active' : '' %>">English</a> | 
+                    <a href="?lang=ar" class="<%= currentLanguage === 'ar' ? 'active' : '' %>">العربية</a>
+                </div>
             </div>
         </div>
     </header>
@@ -57,5 +63,74 @@
     </footer>
 
     <script src="/js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const header = document.querySelector('header');
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    header.classList.toggle('mobile-menu-active');
+                    
+                    // Close all dropdowns when toggling the menu
+                    document.querySelectorAll('.dropdown.active').forEach(function(dropdown) {
+                        dropdown.classList.remove('active');
+                    });
+                });
+            }
+            
+            // Handle dropdown clicking in mobile view
+            document.querySelectorAll('.dropdown > a').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    // Only handle specially in mobile view
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const dropdown = this.closest('.dropdown');
+                        
+                        // Close other dropdowns
+                        document.querySelectorAll('.dropdown').forEach(function(item) {
+                            if (item !== dropdown && item.classList.contains('active')) {
+                                item.classList.remove('active');
+                            }
+                        });
+                        
+                        // Toggle this dropdown
+                        dropdown.classList.toggle('active');
+                    }
+                });
+            });
+            
+            // Close dropdowns and mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                // If clicked outside dropdown
+                if (!e.target.closest('.dropdown') && !e.target.closest('.mobile-menu-btn')) {
+                    // Close all active dropdowns
+                    document.querySelectorAll('.dropdown.active').forEach(function(dropdown) {
+                        dropdown.classList.remove('active');
+                    });
+                    
+                    // Close mobile menu if clicking outside
+                    if (!e.target.closest('nav') && header.classList.contains('mobile-menu-active')) {
+                        header.classList.remove('mobile-menu-active');
+                    }
+                }
+            });
+            
+            // Add played class to match rows with played matches for Preview button styling
+            const matchLinks = document.querySelectorAll('.match-link');
+            matchLinks.forEach(link => {
+                if (link.textContent.trim() === 'Details') {
+                    const matchRow = link.closest('.match-row');
+                    if (matchRow) {
+                        matchRow.classList.add('played');
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

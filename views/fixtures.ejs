@@ -79,7 +79,7 @@
                                 }
                             }
                         %>
-                            <div class="match-row">
+                            <div class="match-row <%= match.played ? 'played' : '' %>">
                                 <div class="match-time <%= timeClass %>"><%= displayTime %></div>
                                 <div class="match-teams">
                                     <div class="team-names">
