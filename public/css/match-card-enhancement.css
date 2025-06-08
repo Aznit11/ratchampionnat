@@ -3,6 +3,127 @@
  * Modern, beautiful styling for match cards across all pages
  */
 
+/* Team Filter Styles */
+.team-filter-section {
+  margin: 20px 0;
+  position: relative;
+  max-width: 600px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.filter-container:focus-within {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 83, 179, 0.3);
+  transform: translateY(-2px);
+}
+
+.team-filter-input {
+  flex: 1;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  color: #333;
+}
+
+.clear-filter-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0 15px;
+  transition: color 0.2s ease;
+}
+
+.clear-filter-btn:hover {
+  color: #333;
+}
+
+.filter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 5px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.team-option {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.team-option:last-child {
+  border-bottom: none;
+}
+
+.team-option:hover {
+  background: linear-gradient(145deg, #f6f7f9 0%, #edf0f5 100%);
+}
+
+.no-matches {
+  text-align: center;
+  padding: 30px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  margin: 20px 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.match-active {
+  background: linear-gradient(145deg, #f0f7ff 0%, #e6f2ff 100%);
+  border-left: 4px solid #0056b3;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive styles for filter */
+@media (max-width: 768px) {
+  .team-filter-section {
+    padding: 0 15px;
+  }
+  
+  .team-filter-input {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+  
+  .filter-dropdown {
+    max-height: 200px;
+  }
+}
+
 /* Base styles for all match cards */
 .match-card, .match-row {
   background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);

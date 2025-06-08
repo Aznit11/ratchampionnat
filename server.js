@@ -536,13 +536,18 @@ app.get('/api/group-standings', (req, res) => {
 
 // Groups page
 app.get('/groups', (req, res) => {
-  db.all(`SELECT g.id, g.name, g.team_count, json_group_array(json_object(
-    'id', t.id,
-    'name', t.name,
-    'team_in_group_id', t.team_in_group_id
-  )) as teams
+  // Use a subquery with ORDER BY to sort teams by team_in_group_id before grouping
+  db.all(`SELECT g.id, g.name, g.team_count, (
+    SELECT json_group_array(json_object(
+      'id', t2.id,
+      'name', t2.name,
+      'team_in_group_id', t2.team_in_group_id
+    ))
+    FROM teams t2
+    WHERE t2.group_id = g.id
+    ORDER BY t2.team_in_group_id
+  ) as teams
   FROM groups g 
-  LEFT JOIN teams t ON g.id = t.group_id 
   GROUP BY g.id 
   ORDER BY g.id`, (err, groups) => {
     if (err) {
